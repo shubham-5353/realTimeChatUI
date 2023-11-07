@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import instance from "../../utils/Axios";
 import ButtonComponent from "../../Components/ButtonComponent";
+import { AxiosError } from "axios";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -21,17 +22,31 @@ const VisuallyHiddenInput = styled("input")({
   background: "red",
 });
 
-const MiddleComponent = () => {
+const MiddleComponent = ({ receiverDetails, messageList }: any) => {
   const [message, setMessage] = useState<any>("");
   const [file, setFile] = useState<any>();
-
-  console.log("file ----- ", file);
   //set inputs values in inputData state on change the text of it.
   const handleChange = (field: any, value: any) => {
     setMessage(value);
   };
-
-  const handleSendMsg = () => {};
+  const handleSendMsg = async () => {
+    if (message.trim() === "") {
+      return;
+    }
+    const payload = {
+      message,
+      userId: receiverDetails.id,
+      attachmentUrl: file,
+    };
+    const response: any = await instance
+      .post(`messages/send`, payload)
+      .catch((err: AxiosError | any) => {
+        console.log("error in api ", err.response.data.message);
+      });
+    if (response?.data.success) {
+      setMessage("");
+    }
+  };
 
   return (
     <div className="middle_container">
@@ -43,7 +58,7 @@ const MiddleComponent = () => {
         >
           <img className="profile_img" src={image.loginSide} />
           <Box>
-            <p className="left_component_user_name">Name</p>
+            <p className="left_component_user_name">{receiverDetails.name}</p>
             <p className="left_component_user_discrirtion">discription</p>
           </Box>
         </div>
@@ -75,8 +90,18 @@ const MiddleComponent = () => {
         </div>
       )}
       <div className="friends_self_msg_container">
-        <p className="friends_msg">Hello</p>
-        <p className="friends_msg self_msg">Hello</p>
+        {messageList?.map((data: any, index: number) => {
+          return (
+            <p
+              key={index}
+              className={`${
+                data.senderUserId === 7 ? "self_msg" : "friends_msg"
+              }`}
+            >
+              {data.message}
+            </p>
+          );
+        })}
       </div>
 
       <div className="middle_input_msg">

@@ -8,7 +8,6 @@ const instance: AxiosInstance = axios.create({
   headers: {
     Accept: "application/json, text/plain,",
     "Content-Type": "application/json",
-    credentials: "include",
   },
 });
 
@@ -21,9 +20,11 @@ axios.interceptors.response.use(
     return response;
   },
   function (error: AxiosError) {
+    console.log("error in instance", error);
     if (error)
       if (error?.response?.status == 401) {
         // redirect to landing page on unauthorized user
+        localStorage.clear();
         window.location.href = "/";
       }
     // Any status codes that falls outside the range of 2xx cause this function to trigger

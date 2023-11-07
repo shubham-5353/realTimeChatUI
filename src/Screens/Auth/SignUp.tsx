@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import Toaster from "../../Components/Toaster";
 import SelectComponent from "../../Components/SelectComponent";
+import instance from "../../utils/Axios";
+import { AxiosError } from "axios";
 
 const SignUp = () => {
   const [inputData, setInputData] = useState<any>({
@@ -74,7 +76,16 @@ const SignUp = () => {
         mobileNumber: inputData.number,
         gender: inputData.gender,
       };
-      console.log("handleSignUp", payload);
+      const response: any = await instance
+        .post(`user/signup`, payload)
+        .catch((err: AxiosError | any) => {
+          console.log("error in api ", err.response.data.message);
+        });
+      console.log("response", response.data);
+      if (response?.data.success) {
+        // store auth token and navigate to chat page
+        navigate("/login");
+      }
     }
   };
 

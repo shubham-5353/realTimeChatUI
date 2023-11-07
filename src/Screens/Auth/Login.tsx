@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import Toaster from "../../Components/Toaster";
 import instance from "../../utils/Axios";
+import { AxiosError } from "axios";
 
 const Login = () => {
   const [inputData, setInputData] = useState<any>({
@@ -21,7 +22,6 @@ const Login = () => {
   //set inputs values in inputData state on change the text of it.
   const handleChange = useCallback(
     (field: any, value: any) => {
-      console.log("handleChange", field, value);
       setInputData((prev: object) => ({ ...prev, [field]: value }));
       setError((prev: object) => ({ ...prev, [field]: "" }));
     },
@@ -35,7 +35,6 @@ const Login = () => {
 
     for (let key in inputData) {
       if (!inputData[key]) {
-        console.log("validation in condition", key);
         updateError[key] = `please enter ${key}`;
         isValid = false;
       }
@@ -51,7 +50,6 @@ const Login = () => {
       }
     }
     setError(updateError);
-    console.log("validation", isValid);
     return isValid;
   };
 
@@ -61,8 +59,17 @@ const Login = () => {
         email: inputData.email,
         password: inputData.password,
       };
-      const response = await instance.post(`user/login`, payload);
-      console.log("handleLogin ------ ", payload, response);
+      const response: any = await instance
+        .post(`user/login`, payload)
+        .catch((err: AxiosError | any) => {
+          console.log("error in api ", err.response.data.message);
+        });
+      console.log("response", response.data);
+      if (response?.data.success) {
+        // store auth token and navigate to chat page
+        localStorage.setItem("authToken", response.data.authToken);
+        navigate("/chat");
+      }
     }
   };
 
