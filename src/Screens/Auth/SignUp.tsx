@@ -40,7 +40,6 @@ const SignUp = () => {
 
     for (let key in inputData) {
       if (!inputData[key]) {
-        console.log("validation in condition", key);
         updateError[key] = `please fill ${key}`;
         isValid = false;
       }
@@ -81,7 +80,6 @@ const SignUp = () => {
         .catch((err: AxiosError | any) => {
           console.log("error in api ", err.response.data.message);
         });
-      console.log("response", response.data);
       if (response?.data.success) {
         // store auth token and navigate to chat page
         navigate("/login");

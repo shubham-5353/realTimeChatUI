@@ -1,4 +1,5 @@
 export const BASE_URL = "http://localhost:3000/api";
+export const IMAGE_BASE_URL = "http://localhost:3000";
 export const regex = {
   mobileNo: `/^\d{10}$/`,
   // email:`^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`,

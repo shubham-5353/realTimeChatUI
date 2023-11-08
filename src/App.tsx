@@ -7,11 +7,10 @@ import setUpInterceptor from "./utils/Interceptor";
 
 function App() {
   const [isAuthToken, setIsAuthToken] = useState(false);
+  const authToken = localStorage.getItem("authToken");
 
   useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    console.log("authToken", authToken);
-    if (authToken) {
+    if (authToken && !isAuthToken) {
       setUpInterceptor(authToken);
       setIsAuthToken(true);
     }

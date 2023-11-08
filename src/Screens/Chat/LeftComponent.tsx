@@ -11,6 +11,7 @@ import { AxiosError } from "axios";
 const LeftComponent = ({ getMessageList, setReceiverDetails }: any) => {
   const [search, setSearch] = useState<any>("");
   const [userList, setUserList] = useState<any>([]);
+  const [selectedUser, setSelectedUser] = useState<any>({});
 
   useEffect(() => {
     getUserList();
@@ -20,16 +21,18 @@ const LeftComponent = ({ getMessageList, setReceiverDetails }: any) => {
       .get(`user/list`)
       .catch((err: AxiosError | any) => {
         console.log("error in api ", err.response.data.message);
+        if (err.response.status === 401) {
+          // localStorage.clear();
+          // window.location.href = "/";
+        }
       });
     if (response?.data.success) {
       // store auth token and navigate to chat page
-      console.log("User list", response?.data);
       setUserList(response?.data.data);
     }
   };
   //set inputs values in inputData state on change the text of it.
   const handleChange = async (field: any, value: any) => {
-    console.log("handleChange", field, value);
     setSearch(value);
     if (value.trim() === "") {
       return;
@@ -37,12 +40,14 @@ const LeftComponent = ({ getMessageList, setReceiverDetails }: any) => {
     const response: any = await instance
       .get(`user/list?search=${value}`)
       .catch((err: AxiosError | any) => {
-        console.log("error in api ", err.response.data.message);
+        console.log("error in api ", err.response.status);
+        if (err.response.status === 401) {
+          localStorage.clear();
+          window.location.href = "/";
+        }
       });
-    console.log("response", response.data);
     if (response?.data.success) {
       // store auth token and navigate to chat page
-      console.log("User list", response?.data);
       setUserList(response?.data.data);
     }
   };
@@ -69,38 +74,43 @@ const LeftComponent = ({ getMessageList, setReceiverDetails }: any) => {
           onHandleChange={handleChange}
         />
       </div>
-      {userList.map((elm: any, index: number) => {
-        return (
-          <div
-            style={{
-              padding: "10px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              borderBottom: "1px solid #28c9c9",
-            }}
-            key={index}
-            onClick={() => {
-              setReceiverDetails(elm);
-              getMessageList(elm.id);
-            }}
-          >
+      <div style={{ height: "75%", overflow: "auto" }}>
+        {userList.map((elm: any, index: number) => {
+          return (
             <div
               style={{
+                padding: "10px 20px",
                 display: "flex",
+                justifyContent: "space-between",
+                borderBottom: "1px solid #28c9c9",
+                cursor: "pointer",
+                backgroundColor: selectedUser[elm.id] ? "#28c9c9" : "",
+              }}
+              key={index}
+              onClick={() => {
+                setReceiverDetails(elm);
+                getMessageList(elm.id);
+                setSelectedUser({ [elm.id]: true });
               }}
             >
-              <img className="profile_img" src={image.loginSide} />
-              <Box>
-                <p className="left_component_user_name">{elm.name} </p>
-                <p className="left_component_user_discrirtion">
-                  {elm.mobileNumber}
-                </p>
-              </Box>
+              <div
+                style={{
+                  display: "flex",
+                }}
+              >
+                <img className="profile_img" src={image.loginSide} />
+                <Box>
+                  <p className="left_component_user_name">{elm.name} </p>
+                  <p className="left_component_user_discrirtion">
+                    {elm.mobileNumber}
+                  </p>
+                </Box>
+              </div>
+              <p className="left_component_user_discrirtion">10.38PM</p>
             </div>
-            <p className="left_component_user_discrirtion">10.38PM</p>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

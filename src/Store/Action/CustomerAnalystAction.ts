@@ -5,8 +5,12 @@ export const getCustomerAnalystList = createAsyncThunk(
   //slice name , function name (getCustomerList)
   "customerAnalyst/getCustomerAnalystList",
   async (payload: any, { dispatch }) => {
-    const response = await instance.post(`customerAnalyst/?limit=${payload?.rowsPerPage ?? 10}&offset=${payload?.offsets ?? 0}`, payload.data);
-    console.log("response in credit analyst", response)
+    const response = await instance.post(
+      `customerAnalyst/?limit=${payload?.rowsPerPage ?? 10}&offset=${
+        payload?.offsets ?? 0
+      }`,
+      payload.data
+    );
     return response?.data?.data;
   }
 );
@@ -24,7 +28,11 @@ export const getMyCaseList = createAsyncThunk(
   //slice name , function name (getCustomerList)
   "customerAnalyst/getMyCaseList",
   async (payload: any, { dispatch }) => {
-    const response = await instance.get(`myCases/${payload.id}/?limit=${payload?.rowsPerPage ?? 10}&offset=${payload?.offsets ?? 0}`);
+    const response = await instance.get(
+      `myCases/${payload.id}/?limit=${payload?.rowsPerPage ?? 10}&offset=${
+        payload?.offsets ?? 0
+      }`
+    );
     console.log("response getMyCaseList", response);
     return response?.data?.data;
   }

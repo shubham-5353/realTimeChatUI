@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import Toaster from "../../Components/Toaster";
 import instance from "../../utils/Axios";
 import { AxiosError } from "axios";
+import setUpInterceptor from "../../utils/Interceptor";
 
 const Login = () => {
   const [inputData, setInputData] = useState<any>({
@@ -63,11 +64,16 @@ const Login = () => {
         .post(`user/login`, payload)
         .catch((err: AxiosError | any) => {
           console.log("error in api ", err.response.data.message);
+          if (err.response.status === 401) {
+            localStorage.clear();
+            window.location.href = "/";
+          }
         });
-      console.log("response", response.data);
       if (response?.data.success) {
+        setUpInterceptor(response.data.authToken);
         // store auth token and navigate to chat page
         localStorage.setItem("authToken", response.data.authToken);
+        localStorage.setItem("loggedInUserId", response.data.userInfo.userId);
         navigate("/chat");
       }
     }
